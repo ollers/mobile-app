@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <title>jQuery Mobile App</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+     
+    <link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
+    <link rel="stylesheet" href="css/themes/my-custom-theme.min.css" />
+    <link rel="stylesheet" href="css/styles.min.css">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Start of first page: #one -->
+    <div role="main" class="ui-content">
+      <div data-role="page" id="one">
+
+        <div role="main" class="ui-content" data-role="collapsible">
+          <h2>Contacts</h2>
+          <ul id="list" data-role="listview" data-autodividers="true" data-filter="true" data-inset="true">
+          </ul> 
+        </div> <!-- data-role="header" -->
+
+      </div> <!-- data-role="page"-->
+          
+
+       <!-- Start of second page: Profile - popup dialog -->
+      <div data-role="page" id="two" data-theme="a">       
+        <div data-role="header">          
+          <div id="profile-head"></div>
+
+          </div><!-- /header -->
+            <div role="main" class="ui-content">
+            <p>
+              <h3 id="summaryHd3">Summary</h3>
+              <ul id="profile" data-role="listview"data-inset="true"></ul>
+            </p>      
+      </div><!-- /page two -->
+      ß
+    </div> <!-- role=main -->
+
+
+    <!-- populate list tag on page 1 dynamically and set list id to JSON id -->
+    <script type="text/JavaScript">
+
+    //get a reference to the select element
+    var $select = $('#list');
+    
+    //request the JSON data and parse into the select element
+    $.getJSON('person.JSON', function(data){
+
+       //clear the current content of the select
+       $select.html('');
+       
+          //iterate over the data and append selected items to list tag
+          $.each(data.person, function(key, val){
+          $select.append('<li id="numberID" class="ui-li-has-thumb"><a href="#two"  data-transition="pop" data-rel="dialog" class="ui-btn ui-btn-icon-right ui-icon-carat-r name"><img src="images/icon.png" class = "icon-user" alt="user" width="30px" height="30px">'+ val.firstname + " " + val.surname + '</a></li>');
+          
+          //set list element id to JSON record ID
+          document.getElementById("numberID").id = val.id;
+
+      });
+
+    //for autodividers to display on initial page load needs to be refreshed
+    $('#list').listview('refresh');
+    });
+
+    </script>
+
+
+  
+    <!-- populate img,h2,h3 & h4 tags on header of page 2 dynamically; referencing list id in list tag from pg one to JSON record -->
+    <script type="text/JavaScript">
+ 
+    // grab list id
+    $(document).on('click', 'li', function(){
+      var listID = this.id;
+      var $select = $('#profile-head');
+      
+      //request the JSON data and parse into the select element
+      $.getJSON('person.JSON', function(data){
+
+        //clear the current content of the select
+        $select.html('');
+          
+        //iterate over the data and append selected items to list tag
+        $.each(data.person, function(key, val){
+        if(val.id==listID) {
+            $select.append('<img class="profileImg" src="images/' + listID + '.jpg" height="120" width="120"/>');
+            $select.append('<h2 id="hd2" class=“ui-title” role=“heading” aria-level=“1”>'+ val.firstname + " " + val.surname  + '</h2>');
+            $select.append('<h3>' + val.occupation + '</h3>');
+            $select.append('<h4>' + val.country + " |  " + val.city + '</h4>');
+            // $select.append('<p><small>'+ val.website + '<small></p>');
+            }
+
+        });
+
+      //for autodividers to display on initial page load needs to be refreshed
+      $('#profile-head').listview('refresh');
+
+      });
+
+    });
+
+    </script>
+
+    <!-- populate p tag of page 2 dynamically with JSON summary; referencing list id in list tag from pg one to JSON record -->
+    <script type="text/JavaScript">
+
+    // grab list id
+    $(document).on('click', 'li', function(){
+      var summaryListID = this.id;
+      //get a reference to the select element
+      var $select = $('#profile');
+    
+        //request the JSON data and parse into the select element
+        $.getJSON('person.JSON', function(data){
+
+          //clear the current content of the select
+          $select.html('');
+
+          //iterate over the data and append a selected items to list tag
+          $.each(data.person, function(key, val){
+            if(val.id===summaryListID){
+                $select.append('<p>'+ val.summary +'</p>');
+                }
+            });
+
+          //refresh page to apply updates
+          $('#profile').listview('refresh');
+
+        });
+    
+    });
+
+    </script>
+
+
+  </body>
+
+</html>
